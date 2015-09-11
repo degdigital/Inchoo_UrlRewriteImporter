@@ -1,0 +1,14 @@
+{
+  "name": "degdigital/Inchoo_UrlRewriteImporter",
+  "type": "magento-module",
+  "description": "URL Rewrite importer through the Magento admin panel (for enterprise only)",
+  "require": {
+    "magento-hackathon/magento-composer-installer":"*"
+  },
+  "extra":{
+    "map":[
+      ["app/code/community/Inchoo/UrlRewriteImporter", "app/code/community/Inchoo/UrlRewriteImporter"],
+      ["app/etc/modules/Inchoo_UrlRewriteImporter.xml", "app/etc/modules/Inchoo_UrlRewriteImporter.xml"]
+    ]
+  }
+}
