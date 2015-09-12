@@ -17,8 +17,26 @@ class Inchoo_UrlRewriteImporter_Block_Adminhtml_UrlRewriteImporter_Edit_Tab_Impo
         $form = new Varien_Data_Form();
 
         $csvOptionsFieldset = $form->addFieldset('csv_options_fieldset', array(
-            'legend' => Mage::helper('customer')->__('CSV Parser Options'),
+            'legend' => Mage::helper('inchoo_urlrewriteimporter')->__('CSV Parser Options'),
         ));
+
+        if (!Mage::app()->isSingleStoreMode()) {
+            $field = $csvOptionsFieldset->addField('store_id', 'multiselect', array(
+                'name'      => 'stores[]',
+                'label'     => Mage::helper('inchoo_urlrewriteimporter')->__('Store View'),
+                'title'     => Mage::helper('inchoo_urlrewriteimporter')->__('Store View'),
+                'required'  => true,
+                'values'    => Mage::getSingleton('adminhtml/system_store')->getStoreValuesForForm(false, true),
+            ));
+            $renderer = $this->getLayout()->createBlock('adminhtml/store_switcher_form_renderer_fieldset_element');
+            $field->setRenderer($renderer);
+        }
+        else {
+            $csvOptionsFieldset->addField('store_id', 'hidden', array(
+                'name'      => 'stores[]',
+                'value'     => Mage::app()->getStore(true)->getId()
+            ));
+        }
 
         $csvOptionsFieldset->addField('length', 'text', array(
             'name' => 'length',
@@ -64,7 +82,7 @@ class Inchoo_UrlRewriteImporter_Block_Adminhtml_UrlRewriteImporter_Edit_Tab_Impo
         ));
 
         $csvFileFieldset = $form->addFieldset('csv_file_fieldset', array(
-            'legend' => Mage::helper('customer')->__('CSV File')
+            'legend' => Mage::helper('inchoo_urlrewriteimporter')->__('CSV File')
         ));
 
         $csvFileFieldset->addField('file', 'file', array(

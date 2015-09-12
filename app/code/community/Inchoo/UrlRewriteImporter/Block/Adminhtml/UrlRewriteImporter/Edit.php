@@ -16,6 +16,7 @@ class Inchoo_UrlRewriteImporter_Block_Adminhtml_UrlRewriteImporter_Edit extends 
 
         parent::__construct();
 
+        $this->_updateButton('save', 'label', Mage::helper('inchoo_urlrewriteimporter')->__('Import'));
         $this->_updateButton('back', 'onclick', "setLocation('{$this->getUrl('*/urlrewrite/index')}')");
         $this->_removeButton('reset');
     }

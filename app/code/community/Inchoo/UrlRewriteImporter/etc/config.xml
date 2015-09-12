@@ -24,7 +24,12 @@
             <inchoo_urlrewriteimporter>
                 <class>Inchoo_UrlRewriteImporter_Block</class>
             </inchoo_urlrewriteimporter>
-        </blocks>     
+        </blocks>
+        <helpers>
+            <inchoo_urlrewriteimporter>
+                <class>Inchoo_UrlRewriteImporter_Helper</class>
+            </inchoo_urlrewriteimporter>
+        </helpers>
     </global>
     <adminhtml>
         <events>

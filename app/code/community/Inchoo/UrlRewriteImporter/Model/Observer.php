@@ -10,7 +10,7 @@
 class Inchoo_UrlRewriteImporter_Model_Observer {
 
     public function injectImportUrlRewritesButton($observer) {
-        if ($observer->getEvent()->getBlock() instanceof Mage_Adminhtml_Block_Urlrewrite) {
+        if ($observer->getEvent()->getBlock() instanceof Enterprise_UrlRewrite_Block_Adminhtml_UrlRedirect || $observer->getEvent()->getBlock() instanceof Mage_Adminhtml_Block_Urlrewrite) {
             $observer->getEvent()->getBlock()->addButton('importProductRewrites', array(
                 'label' => Mage::helper('catalog')->__('Import URL Rewrites'),
                 'onclick' => "setLocation('{$observer->getEvent()->getBlock()->getUrl('*/Inchoo_UrlRewriteImporter_Import/new')}')",

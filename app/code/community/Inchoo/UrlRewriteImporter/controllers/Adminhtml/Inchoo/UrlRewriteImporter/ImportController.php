@@ -7,13 +7,16 @@
  * @copyright   Copyright (c) Inchoo
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportController extends Mage_Adminhtml_Controller_Action {
+class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportController extends Mage_Adminhtml_Controller_Action
+{
 
-    protected function _getSession() {
+    protected function _getSession()
+    {
         return Mage::getSingleton('adminhtml/session');
     }
 
-    private function _allowedType($type) {
+    private function _allowedType($type)
+    {
         $mimes = array(
             'text/csv',
             'text/plain',
@@ -34,7 +37,8 @@ class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportContro
         return false;
     }
 
-    public function saveAction() {
+    public function saveAction()
+    {
         if ($this->getRequest()->isPost()) {
 
             $filename = $_FILES['file']['tmp_name'];
@@ -52,42 +56,63 @@ class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportContro
             }
 
             $length = $this->getRequest()->getParam('length', 0);
+            $storeIds = $this->getRequest()->getParam('stores', array(0));
             $delimiter = $this->getRequest()->getParam('delimiter', ',');
             $enclosure = $this->getRequest()->getParam('enclosure', '"');
             $escape = $this->getRequest()->getParam('escape', '\\');
             $skipline = $this->getRequest()->getParam('skipline', false);
 
             $total = 0;
+            $lineNumber = 0;
             $totalSuccess = 0;
             $logException = '';
 
             if (($fp = fopen($filename, 'r'))) {
                 while (($line = fgetcsv($fp, $length, $delimiter, $enclosure, $escape))) {
+                    $lineNumber++;
 
-                    $total++;
-                    if ($skipline && ($total == 1)) {
+                    if ($skipline && ($lineNumber === 1)) {
                         continue;
                     }
 
                     $requestPath = $line[0];
                     $targetPath = $line[1];
 
-                    $rewrite = Mage::getModel('core/url_rewrite');
+                    foreach ($storeIds as $index => $storeId) {
+                        $total++;
 
-                    $rewrite->setIdPath(uniqid())
-                            ->setTargetPath($targetPath)
-                            ->setOptions('RP')
-                            ->setDescription('Inchoo_UrlRewriteImporter')
-                            ->setRequestPath($requestPath)
-                            ->setIsSystem(0)
-                            ->setStoreId(0);
+                        if (Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
 
-                    try {
-                        $rewrite->save();
-                        $totalSuccess++;
-                    } catch (Exception $e) {
-                        $logException = $e->getMessage();
-                        Mage::logException($e);
+                            $rewrite = Mage::getModel('enterprise_urlrewrite/redirect');
+
+                            // Check for existing rewrites:
+                            // Attempt loading it first, to prevent duplicates:
+                            $rewrite->loadByRequestPath($requestPath, $storeId);
+
+                            $rewrite->setStoreId($storeId);
+                            $rewrite->setOptions('RP');
+                            $rewrite->setIdentifier($requestPath);
+                            $rewrite->setRequestPath($requestPath);
+                            $rewrite->setDescription('URL Rewrite Upload');
+                            $rewrite->setTargetPath($targetPath);
+                            $rewrite->setEntityType(Mage_Core_Model_Url_Rewrite::TYPE_CUSTOM);
+                        } else {
+                            $rewrite = Mage::getModel('core/url_rewrite');
+                            $rewrite->setIdPath(uniqid())
+                                ->setTargetPath($targetPath)
+                                ->setOptions('RP')
+                                ->setDescription('URL Rewrite Upload')
+                                ->setRequestPath($requestPath)
+                                ->setIsSystem(0)
+                                ->setStoreId($storeId);
+                        }
+                        try {
+                            $rewrite->save();
+                            $totalSuccess++;
+                        } catch (Exception $e) {
+                            $logException = $e->getMessage();
+                            Mage::logException($e);
+                        }
                     }
                 }
                 fclose($fp);
@@ -114,7 +139,8 @@ class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportContro
         return;
     }
 
-    public function editAction() {
+    public function editAction()
+    {
         $this->loadLayout();
 
         $this->_addContent($this->getLayout()->createBlock('inchoo_urlrewriteimporter/adminhtml_UrlRewriteImporter_edit'));
@@ -125,8 +151,12 @@ class Inchoo_UrlRewriteImporter_Adminhtml_Inchoo_UrlRewriteImporter_ImportContro
         $this->renderLayout();
     }
 
-    public function newAction() {
+    public function newAction()
+    {
         $this->_forward('edit');
     }
 
 }
+
+
+
