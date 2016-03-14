@@ -68,8 +68,8 @@ class Inchoo_UrlRewriteImporter_Block_Adminhtml_UrlRewriteImporter_Edit_Tab_Impo
         $csvOptionsFieldset->addField('escape', 'text', array(
             'name' => 'escape',
             'label' => 'Escape',
-            'value' => '\\\\',
-            'after_element_html' => '<small>fgetcsv $escape param, defaults to: \\\</small>',
+            'value' => '\\',
+            'after_element_html' => '<small>fgetcsv $escape param, defaults to: \\</small>',
             'class' => 'required-entry',
             'required' => true,
         ));
